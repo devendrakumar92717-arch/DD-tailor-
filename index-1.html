@@ -1,0 +1,356 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#087a55">
+<title>DD Tailor - Management System</title>
+<style>
+:root{--green:#078653;--green2:#0aa66a;--blue:#087fc1;--red:#e6294b;--purple:#8140b5;--ink:#17243b;--muted:#66758a;--bg:#eef4f8;--line:#dce6ee;--white:#fff}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);font-family:Arial, sans-serif;color:var(--ink)}
+button,input,select,textarea{font:inherit}
+button{cursor:pointer;border:0}
+.topbar{background:linear-gradient(105deg,#087a55,#087fc1 55%,#d71945);color:#fff;padding:16px 14px;position:sticky;top:0;z-index:5;box-shadow:0 3px 12px #102b4430}
+.brand{display:flex;align-items:center;gap:10px;font-size:21px;font-weight:800}
+.brand .logo{font-size:30px}
+.sub{font-size:12px;opacity:.9;margin:3px 0 0 43px}
+.wrap{max-width:760px;margin:auto;padding:12px 12px 90px}
+.nav{display:flex;gap:8px;overflow-x:auto;padding:10px 0 12px;scrollbar-width:none}
+.nav button{white-space:nowrap;background:#fff;color:#345;padding:11px 14px;border-radius:12px;font-weight:700;border:1px solid var(--line)}
+.nav button.active{background:var(--green);color:#fff;border-color:var(--green)}
+.stats{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px;margin-bottom:12px}
+.stat{border-radius:14px;padding:13px;color:#fff;box-shadow:0 3px 10px #102b4410}
+.stat small{display:block;font-size:12px;opacity:.95}.stat strong{display:block;font-size:21px;margin-top:5px}
+.purple{background:var(--purple)}.green{background:var(--green)}.red{background:var(--red)}.blue{background:var(--blue)}
+.card{background:#fff;border-radius:17px;padding:15px;margin:11px 0;box-shadow:0 4px 15px #1b38500c;border:1px solid #edf1f5}
+.card h2,.card h3{margin:0 0 13px}.card h2{font-size:18px}.card h3{font-size:16px}
+.row{display:flex;align-items:center;justify-content:space-between;gap:10px}
+.field{margin:10px 0}.field label{display:block;font-size:13px;font-weight:700;margin-bottom:6px;color:#35445a}
+input,select,textarea{width:100%;padding:12px;border:1px solid #d6e0e8;border-radius:11px;background:#fff;color:var(--ink);outline:none}
+input:focus,select:focus,textarea:focus{border-color:var(--blue);box-shadow:0 0 0 3px #087fc11a}
+textarea{min-height:75px;resize:vertical}
+.btn{padding:11px 14px;border-radius:11px;color:#fff;font-weight:700;display:inline-flex;align-items:center;justify-content:center;gap:6px}
+.btn.green{background:var(--green)}.btn.blue{background:var(--blue)}.btn.red{background:var(--red)}.btn.purple{background:var(--purple)}.btn.gray{background:#65758a}
+.btn.light{background:#eaf3f9;color:#24506c}
+.btn.full{width:100%}
+.btnrow{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}.btnrow .btn{flex:1}
+.search{margin:4px 0 10px}
+.customer{display:flex;align-items:center;gap:11px;padding:12px;border:1px solid var(--line);border-radius:14px;background:#fff;margin:9px 0;width:100%;text-align:left;color:inherit}
+.avatar{width:43px;height:43px;border-radius:50%;background:#e0f5eb;color:var(--green);display:grid;place-items:center;font-size:20px;flex-shrink:0}
+.customer-main{flex:1;min-width:0}.customer-name{font-weight:800}.tiny{font-size:12px;color:var(--muted);margin-top:4px;overflow-wrap:anywhere}
+.amount{font-weight:800;text-align:right;white-space:nowrap}
+.pill{display:inline-block;border-radius:30px;padding:4px 8px;font-size:11px;font-weight:700;margin-top:5px}
+.pill.paid{background:#d9f6e7;color:#087a45}.pill.pending{background:#fff0c5;color:#8a5b00}
+.hidden{display:none!important}
+.back{margin-bottom:12px}
+.info-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:7px;margin:12px 0}
+.info{border-radius:12px;padding:11px 8px;text-align:center;color:#fff}
+.info small{font-size:11px;display:block}.info strong{font-size:18px;display:block;margin-top:5px}
+.detail-line{padding:10px 0;border-bottom:1px solid #edf1f5;display:flex;justify-content:space-between;gap:12px;font-size:14px}
+.detail-line:last-child{border:0}.detail-line span:first-child{color:var(--muted)}
+.table-wrap{overflow-x:auto}
+table{width:100%;border-collapse:collapse;min-width:440px;font-size:13px}
+th{background:#e8f2f8;color:#23445a;text-align:left;padding:10px}
+td{padding:10px;border-bottom:1px solid #edf1f5}
+.empty{text-align:center;color:var(--muted);padding:24px 8px}
+.receipt{border:1px dashed #9bb3c4;border-radius:12px;padding:15px;background:#fff}
+.receipt-head{text-align:center;border-bottom:2px solid var(--green);padding-bottom:10px;margin-bottom:10px}
+.receipt-head strong{font-size:21px;color:var(--green)}
+.note{background:#edf7ff;color:#24506c;padding:11px;border-radius:10px;font-size:13px}
+.bottom{position:fixed;bottom:0;left:0;right:0;background:#fff;border-top:1px solid var(--line);padding:8px 10px calc(8px + env(safe-area-inset-bottom));display:flex;justify-content:space-around;z-index:8}
+.bottom button{background:transparent;color:#64758a;font-size:11px;font-weight:700;display:grid;gap:3px;justify-items:center}
+.bottom button span{font-size:20px}.bottom button.active{color:var(--green)}
+.toast{position:fixed;left:50%;bottom:78px;transform:translateX(-50%);background:#17243b;color:#fff;padding:12px 18px;border-radius:12px;z-index:20;display:none;max-width:90%;text-align:center}
+
+.success-overlay{position:fixed;inset:0;background:#10203399;display:flex;align-items:center;justify-content:center;padding:18px;z-index:30}
+.success-modal{width:100%;max-width:390px;background:#fff;border-radius:22px;padding:24px 18px;text-align:center;box-shadow:0 18px 60px #0003}
+.success-mark{width:72px;height:72px;border-radius:50%;margin:0 auto 12px;background:#dcfce9;color:#078653;display:grid;place-items:center;font-size:38px;font-weight:800}
+.success-modal h2{margin:8px 0;color:#087a45;font-size:23px}
+.success-amount{font-size:32px;font-weight:800;color:#087a45;margin:12px 0}
+.success-details{background:#f2f7fa;border-radius:13px;padding:10px 13px;margin:14px 0;text-align:left}
+.success-details .detail-line{font-size:13px}
+.success-modal .btnrow{margin-top:14px}
+.small-muted{font-size:12px;color:var(--muted)}
+@media(min-width:650px){.wrap{padding-left:22px;padding-right:22px}.stats{grid-template-columns:repeat(4,minmax(0,1fr))}.customer{padding:14px}}
+@media print{body{background:#fff}.topbar,.nav,.bottom,.no-print,.toast{display:none!important}.wrap{padding:0;max-width:none}.card{box-shadow:none;border:0}.receipt{border:0}}
+</style>
+</head>
+<body>
+<header class="topbar">
+  <div class="brand"><span class="logo">✂️</span><span>DD Tailor</span></div>
+  <div class="sub">Stitching • Alteration • Customer Records</div>
+</header>
+<main class="wrap">
+  <nav class="nav no-print" id="mainNav">
+    <button class="active" data-page="home">🏠 Dashboard</button>
+    <button data-page="customers">👥 Customer List</button>
+    <button data-page="employees">🧵 Employee List</button>
+  </nav>
+
+  <section id="homePage">
+    <div class="stats">
+      <div class="stat blue"><small>Total Customers</small><strong id="statCustomers">0</strong></div>
+      <div class="stat purple"><small>Total Amount</small><strong id="statTotal">₹0</strong></div>
+      <div class="stat green"><small>Received</small><strong id="statReceived">₹0</strong></div>
+      <div class="stat red"><small>Remaining</small><strong id="statRemaining">₹0</strong></div>
+    </div>
+    <div class="card">
+      <div class="row"><h2>Recent Customers</h2><button class="btn green" onclick="showPage('customers')">View All</button></div>
+      <div id="recentList"></div>
+    </div>
+    <div class="note">आपका डेटा इसी फोन के ब्राउज़र में सेव होता है। समय-समय पर अपने डेटा का बैकअप रखना जरूरी है।</div>
+  </section>
+
+  <section id="customersPage" class="hidden">
+    <div class="row"><h2>Customer List</h2><button class="btn green" onclick="openCustomerForm()">＋ Add Customer</button></div>
+    <input class="search" id="customerSearch" placeholder="नाम या मोबाइल नंबर से खोजें..." oninput="renderCustomers()">
+    <div id="customerList"></div>
+  </section>
+
+  <section id="customerFormPage" class="hidden">
+    <button class="btn light back" onclick="showPage('customers')">← Back</button>
+    <div class="card">
+      <h2 id="customerFormTitle">Add Customer</h2>
+      <input type="hidden" id="editCustomerId">
+      <div class="field"><label>व्यक्ति का नाम *</label><input id="cName" placeholder="ग्राहक का नाम"></div>
+      <div class="field"><label>मोबाइल नंबर</label><input id="cPhone" type="tel" inputmode="tel" placeholder="मोबाइल नंबर"></div>
+      <div class="field"><label>पता</label><input id="cAddress" placeholder="गाँव / मोहल्ला / शहर"></div>
+      <div class="field"><label>काम / कपड़े का प्रकार</label><input id="cWork" placeholder="जैसे कुर्ती, पैंट-शर्ट"></div>
+      <div class="field"><label>कपड़ा / Fabric</label><input id="cFabric" placeholder="जैसे Cotton"></div>
+      <div class="field"><label>Quantity</label><input id="cQty" type="number" min="1" value="1"></div>
+      <div class="field"><label>सिलाई की कुल रकम (₹) *</label><input id="cTotal" type="number" min="0" inputmode="decimal" placeholder="जैसे 500"></div>
+      <div class="field"><label>अग्रिम जमा (₹)</label><input id="cAdvance" type="number" min="0" inputmode="decimal" value="0"></div>
+      <div class="field"><label>Booking Date</label><input id="cBooking" type="date"></div>
+      <div class="field"><label>Delivery Date</label><input id="cDelivery" type="date"></div>
+      <div class="field"><label>Notes</label><textarea id="cNotes" placeholder="कोई जरूरी जानकारी"></textarea></div>
+      <button class="btn green full" onclick="saveCustomer()">💾 Save Customer</button>
+    </div>
+  </section>
+
+  <section id="customerDetailPage" class="hidden">
+    <button class="btn light back no-print" onclick="showPage('customers')">← Back to List</button>
+    <div class="card">
+      <div class="row"><h2 id="dName">Customer</h2><span id="dStatus" class="pill pending">Pending</span></div>
+      <div class="detail-line"><span>📞 मोबाइल</span><b id="dPhone">-</b></div>
+      <div class="detail-line"><span>📍 पता</span><b id="dAddress">-</b></div>
+      <div class="detail-line"><span>📅 Booking Date</span><b id="dBooking">-</b></div>
+      <div class="detail-line"><span>🚚 Delivery Date</span><b id="dDelivery">-</b></div>
+      <div class="btnrow no-print">
+        <button class="btn blue" onclick="editCurrentCustomer()">✏️ Edit</button>
+        <button class="btn red" onclick="deleteCurrentCustomer()">🗑 Delete</button>
+      </div>
+    </div>
+    <div class="info-grid">
+      <div class="info purple"><small>Total Amount</small><strong id="dTotal">₹0</strong></div>
+      <div class="info green"><small>Received</small><strong id="dReceived">₹0</strong></div>
+      <div class="info red"><small>Remaining</small><strong id="dRemaining">₹0</strong></div>
+    </div>
+    <div class="card">
+      <h3>🧵 Work Details</h3>
+      <div class="detail-line"><span>Work</span><b id="dWork">-</b></div>
+      <div class="detail-line"><span>Fabric</span><b id="dFabric">-</b></div>
+      <div class="detail-line"><span>Quantity</span><b id="dQty">-</b></div>
+      <div class="detail-line"><span>Notes</span><b id="dNotes">-</b></div>
+    </div>
+    <div class="card no-print">
+      <h3>💰 Add Payment</h3>
+      <div class="field"><label>Payment Amount (₹)</label><input id="pAmount" type="number" min="1" inputmode="decimal" placeholder="जमा रकम लिखें"></div>
+      <div class="field"><label>Payment Date</label><input id="pDate" type="date"></div>
+      <div class="field"><label>Payment Type</label><select id="pType"><option>Cash</option><option>UPI</option><option>Bank Transfer</option><option>Other</option></select></div>
+      <div class="field"><label>Remark</label><input id="pRemark" placeholder="जैसे एडवांस या बाकी भुगतान"></div>
+      <button class="btn green full" onclick="savePayment()">＋ Save Payment</button>
+    </div>
+    <div class="card">
+      <h3>📋 Payment History</h3>
+      <div class="table-wrap"><table><thead><tr><th>S.N.</th><th>Date</th><th>Amount</th><th>Type</th><th>Remark</th></tr></thead><tbody id="paymentRows"></tbody></table></div>
+      <div id="paymentEmpty" class="empty hidden">अभी कोई भुगतान दर्ज नहीं है।</div>
+    </div>
+    <div class="card">
+      <h3>🧾 Receipt / Share</h3>
+      <div id="receiptContent" class="receipt"></div>
+      <div class="btnrow no-print">
+        <button class="btn blue" onclick="printReceipt()">🖨 Print</button>
+        <button class="btn green" onclick="sendSMS()">💬 SMS</button>
+        <button class="btn purple" onclick="shareReceipt()">↗ Share</button>
+      </div>
+      <button class="btn light full no-print" style="margin-top:9px" onclick="downloadReceiptText()">⬇ Save Receipt Text</button>
+    </div>
+  </section>
+
+  <section id="employeesPage" class="hidden">
+    <div class="row"><h2>Employee List</h2><button class="btn green" onclick="openEmployeeForm()">＋ Add Employee</button></div>
+    <div class="note">कर्मचारियों का नाम, मोबाइल और मासिक काम का रिकॉर्ड यहाँ रखा जाएगा।</div>
+    <div id="employeeList"></div>
+  </section>
+  <section id="employeeFormPage" class="hidden">
+    <button class="btn light back" onclick="showPage('employees')">← Back</button>
+    <div class="card">
+      <h2>Add Employee</h2>
+      <div class="field"><label>Employee Name *</label><input id="eName" placeholder="नाम"></div>
+      <div class="field"><label>Mobile Number</label><input id="ePhone" type="tel" placeholder="मोबाइल नंबर"></div>
+      <div class="field"><label>Address</label><input id="eAddress" placeholder="पता"></div>
+      <div class="field"><label>8 घंटे की मजदूरी (₹)</label><input id="eRate8" type="number" value="150"></div>
+      <div class="field"><label>12 घंटे की मजदूरी (₹)</label><input id="eRate12" type="number" value="220"></div>
+      <button class="btn green full" onclick="saveEmployee()">💾 Save Employee</button>
+    </div>
+  </section>
+  <section id="employeeDetailPage" class="hidden">
+    <button class="btn light back" onclick="showPage('employees')">← Back</button>
+    <div class="card">
+      <h2 id="eDetailName">Employee</h2>
+      <div class="detail-line"><span>Mobile</span><b id="eDetailPhone">-</b></div>
+      <div class="detail-line"><span>Address</span><b id="eDetailAddress">-</b></div>
+      <div class="detail-line"><span>8 घंटे की मजदूरी</span><b id="eDetail8">-</b></div>
+      <div class="detail-line"><span>12 घंटे की मजदूरी</span><b id="eDetail12">-</b></div>
+    </div>
+    <div class="card">
+      <h3>📅 महीने का काम दर्ज करें</h3>
+      <div class="field"><label>महीना</label><input id="workMonth" type="month"></div>
+      <div class="field"><label>काम की तारीख</label><input id="workDate" type="date"></div>
+      <div class="field"><label>काम के घंटे</label><select id="workHours"><option value="8">8 घंटे</option><option value="12">12 घंटे</option><option value="0">छुट्टी / काम नहीं</option></select></div>
+      <div class="field"><label>अतिरिक्त रकम / समायोजन (₹)</label><input id="workExtra" type="number" value="0"></div>
+      <div class="field"><label>नोट</label><input id="workNote" placeholder="वैकल्पिक"></div>
+      <button class="btn green full" onclick="saveWorkDay()">＋ दिन का हिसाब जोड़ें</button>
+    </div>
+    <div class="card">
+      <h3>महीने का पूरा हिसाब</h3>
+      <div class="row"><b id="workMonthTitle">महीना</b><b id="workMonthTotal">₹0</b></div>
+      <div class="table-wrap"><table><thead><tr><th>तारीख</th><th>घंटे</th><th>रकम</th><th>नोट</th></tr></thead><tbody id="workRows"></tbody></table></div>
+      <div class="small-muted" id="workSummary"></div>
+    </div>
+  </section>
+</main>
+
+<nav class="bottom no-print">
+  <button class="active" data-page="home"><span>🏠</span>Home</button>
+  <button data-page="customers"><span>👥</span>Customers</button>
+  <button data-page="employees"><span>🧵</span>Employees</button>
+  <button onclick="showBackup()"><span>💾</span>Backup</button>
+</nav>
+
+<div class="success-overlay hidden no-print" id="paymentSuccess" role="dialog" aria-modal="true" aria-labelledby="successTitle">
+  <div class="success-modal">
+    <div class="success-mark">✓</div>
+    <h2 id="successTitle">Payment Successful!</h2>
+    <div class="small-muted" id="successCustomer">ग्राहक का भुगतान सफलतापूर्वक सेव हो गया।</div>
+    <div class="success-amount" id="successAmount">₹0</div>
+    <div class="success-details">
+      <div class="detail-line"><span>कुल बिल</span><b id="successTotal">₹0</b></div>
+      <div class="detail-line"><span>अब तक जमा</span><b id="successReceived">₹0</b></div>
+      <div class="detail-line"><span>बाकी रकम</span><b id="successRemaining">₹0</b></div>
+      <div class="detail-line"><span>भुगतान तारीख</span><b id="successDate">-</b></div>
+      <div class="detail-line"><span>भुगतान का तरीका</span><b id="successType">-</b></div>
+    </div>
+    <div class="btnrow">
+      <button class="btn blue" onclick="printReceipt()">🖨 रसीद प्रिंट</button>
+      <button class="btn green" onclick="closePaymentSuccess()">ठीक है</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+const KEY='ddTailorDataV1';
+let db=loadDB(), currentCustomerId=null, currentEmployeeId=null;
+function loadDB(){try{return JSON.parse(localStorage.getItem(KEY))||{customers:[],employees:[]}}catch(e){return{customers:[],employees:[]}}}
+function saveDB(){localStorage.setItem(KEY,JSON.stringify(db));renderAll()}
+function money(n){return '₹'+Number(n||0).toLocaleString('en-IN')}
+function today(){return new Date().toISOString().slice(0,10)}
+function uid(){return Date.now().toString(36)+Math.random().toString(36).slice(2,7)}
+function esc(s){return String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
+function received(c){return (c.payments||[]).reduce((s,p)=>s+Number(p.amount||0),0)}
+function remaining(c){return Math.max(0,Number(c.total||0)-received(c))}
+function showToast(msg){let t=document.getElementById('toast');t.textContent=msg;t.style.display='block';setTimeout(()=>t.style.display='none',2400)}
+const pages=['home','customers','customerForm','customerDetail','employees','employeeForm','employeeDetail'];
+function showPage(name){pages.forEach(p=>document.getElementById(p+'Page').classList.toggle('hidden',p!==name));document.querySelectorAll('[data-page]').forEach(b=>b.classList.toggle('active',b.dataset.page===name));if(name==='home')renderHome();if(name==='customers')renderCustomers();if(name==='employees')renderEmployees();window.scrollTo(0,0)}
+document.querySelectorAll('[data-page]').forEach(b=>b.addEventListener('click',()=>showPage(b.dataset.page)));
+function renderAll(){renderHome();renderCustomers();renderEmployees();if(currentCustomerId&& !document.getElementById('customerDetailPage').classList.contains('hidden'))renderCustomerDetail()}
+function renderHome(){
+ let cs=db.customers,total=cs.reduce((s,c)=>s+Number(c.total||0),0),got=cs.reduce((s,c)=>s+received(c),0);
+ document.getElementById('statCustomers').textContent=cs.length;
+ document.getElementById('statTotal').textContent=money(total);
+ document.getElementById('statReceived').textContent=money(got);
+ document.getElementById('statRemaining').textContent=money(Math.max(0,total-got));
+ let list=document.getElementById('recentList');let recent=[...cs].slice(-5).reverse();
+ list.innerHTML=recent.length?recent.map(customerCard).join(''):'<div class="empty">अभी कोई ग्राहक नहीं। Add Customer दबाकर शुरुआत करें।</div>';
+}
+function customerCard(c){return `<button class="customer" onclick="openCustomer('${c.id}')"><div class="avatar">👤</div><div class="customer-main"><div class="customer-name">${esc(c.name)}</div><div class="tiny">${esc(c.phone||'मोबाइल नहीं')} • ${esc(c.address||'पता नहीं')}</div><span class="pill ${remaining(c)===0?'paid':'pending'}">${remaining(c)===0?'Paid':'Pending'}</span></div><div class="amount">${money(c.total)}<div class="tiny">बाकी ${money(remaining(c))}</div></div><b>›</b></button>`}
+function renderCustomers(){let q=(document.getElementById('customerSearch')?.value||'').toLowerCase();let a=db.customers.filter(c=>(c.name+' '+(c.phone||'')).toLowerCase().includes(q));document.getElementById('customerList').innerHTML=a.length?a.map(customerCard).join(''):'<div class="empty">कोई ग्राहक नहीं मिला।</div>'}
+function openCustomerForm(c=null){
+ document.getElementById('customerFormTitle').textContent=c?'Edit Customer':'Add Customer';
+ document.getElementById('editCustomerId').value=c?.id||'';
+ [['cName',c?.name],['cPhone',c?.phone],['cAddress',c?.address],['cWork',c?.work],['cFabric',c?.fabric],['cQty',c?.qty??1],['cTotal',c?.total],['cAdvance',c?0:0],['cBooking',c?.booking||today()],['cDelivery',c?.delivery],['cNotes',c?.notes]].forEach(([id,v])=>document.getElementById(id).value=v??'');
+ showPage('customerForm');
+}
+function saveCustomer(){
+ let id=document.getElementById('editCustomerId').value,name=document.getElementById('cName').value.trim(),total=Number(document.getElementById('cTotal').value);
+ if(!name||!Number.isFinite(total)||total<0){showToast('नाम और सही कुल रकम भरें।');return}
+ let c=id?db.customers.find(x=>x.id===id):null;
+ if(!c){c={id:uid(),payments:[],created:Date.now()};db.customers.push(c)}
+ Object.assign(c,{name,phone:document.getElementById('cPhone').value.trim(),address:document.getElementById('cAddress').value.trim(),work:document.getElementById('cWork').value.trim(),fabric:document.getElementById('cFabric').value.trim(),qty:Number(document.getElementById('cQty').value||1),total,booking:document.getElementById('cBooking').value,delivery:document.getElementById('cDelivery').value,notes:document.getElementById('cNotes').value.trim()});
+ let adv=Number(document.getElementById('cAdvance').value||0);
+ if(!id&&adv>0){if(adv>total){showToast('अग्रिम रकम कुल रकम से ज्यादा नहीं हो सकती।');return}c.payments.push({id:uid(),amount:adv,date:c.booking||today(),type:'Cash',remark:'Advance',created:Date.now()})}
+ currentCustomerId=c.id;saveDB();openCustomer(c.id);showToast('ग्राहक सेव हो गया।');
+}
+function openCustomer(id){currentCustomerId=id;renderCustomerDetail();showPage('customerDetail')}
+function renderCustomerDetail(){
+ let c=db.customers.find(x=>x.id===currentCustomerId);if(!c)return;
+ let got=received(c),bal=remaining(c);
+ const set=(id,v)=>document.getElementById(id).textContent=v||'-';
+ set('dName',c.name);set('dPhone',c.phone);set('dAddress',c.address);set('dBooking',c.booking);set('dDelivery',c.delivery);set('dTotal',money(c.total));set('dReceived',money(got));set('dRemaining',money(bal));set('dWork',c.work);set('dFabric',c.fabric);set('dQty',c.qty);set('dNotes',c.notes);
+ let st=document.getElementById('dStatus');st.textContent=bal===0?'Paid':'Pending';st.className='pill '+(bal===0?'paid':'pending');
+ let ps=[...(c.payments||[])].sort((a,b)=>(a.date||'').localeCompare(b.date||''));
+ document.getElementById('paymentRows').innerHTML=ps.map((p,i)=>`<tr><td>${i+1}</td><td>${esc(p.date)}</td><td>${money(p.amount)}</td><td>${esc(p.type)}</td><td>${esc(p.remark||'-')}</td></tr>`).join('');
+ document.getElementById('paymentEmpty').classList.toggle('hidden',ps.length>0);
+ document.getElementById('receiptContent').innerHTML=receiptHTML(c);
+ document.getElementById('pDate').value=today();
+}
+function editCurrentCustomer(){let c=db.customers.find(x=>x.id===currentCustomerId);if(c)openCustomerForm(c)}
+function deleteCurrentCustomer(){if(!confirm('क्या इस ग्राहक का पूरा रिकॉर्ड हटाना है?'))return;db.customers=db.customers.filter(c=>c.id!==currentCustomerId);currentCustomerId=null;saveDB();showPage('customers');showToast('ग्राहक हटा दिया गया।')}
+function savePayment(){
+ let c=db.customers.find(x=>x.id===currentCustomerId);if(!c)return;
+ let amount=Number(document.getElementById('pAmount').value),date=document.getElementById('pDate').value||today();
+ let type=document.getElementById('pType').value;
+ if(!amount||amount<=0){showToast('सही भुगतान रकम लिखें।');return}
+ if(amount>remaining(c)){showToast('भुगतान बाकी रकम से ज्यादा है।');return}
+ c.payments=c.payments||[];
+ c.payments.push({id:uid(),amount,date,type,remark:document.getElementById('pRemark').value.trim(),created:Date.now()});
+ saveDB();
+ document.getElementById('pAmount').value='';
+ document.getElementById('pRemark').value='';
+ renderCustomerDetail();
+ document.getElementById('successCustomer').textContent='ग्राहक: '+c.name;
+ document.getElementById('successAmount').textContent=money(amount);
+ document.getElementById('successTotal').textContent=money(c.total);
+ document.getElementById('successReceived').textContent=money(received(c));
+ document.getElementById('successRemaining').textContent=money(remaining(c));
+ document.getElementById('successDate').textContent=date;
+ document.getElementById('successType').textContent=type;
+ document.getElementById('paymentSuccess').classList.remove('hidden');
+}
+function closePaymentSuccess(){document.getElementById('paymentSuccess').classList.add('hidden')}
+function receiptHTML(c){
+ let got=received(c),bal=remaining(c);
+ return `<div class="receipt-head"><strong>DD Tailor</strong><div>Stitching • Alteration • Designing</div><b>भुगतान रसीद</b></div>
+ <div class="detail-line"><span>ग्राहक का नाम</span><b>${esc(c.name)}</b></div><div class="detail-line"><span>मोबाइल</span><b>${esc(c.phone||'-')}</b></div><div class="detail-line"><span>पता</span><b>${esc(c.address||'-')}</b></div><div class="detail-line"><span>काम</span><b>${esc(c.work||'-')}</b></div><div class="detail-line"><span>रसीद तारीख</span><b>${today()}</b></div>
+ <div class="detail-line"><span>Total Amount</span><b>${money(c.total)}</b></div><div class="detail-line"><span>Received Amount</span><b style="color:#078653">${money(got)}</b></div><div class="detail-line"><span>Remaining Amount</span><b style="color:#e6294b">${money(bal)}</b></div><p style="text-align:center;margin:15px 0 0">धन्यवाद! फिर आइए।</p>`;
+}
+function printReceipt(){let c=db.customers.find(x=>x.id===currentCustomerId);if(!c)return;let w=window.open('','_blank');if(!w){showToast('ब्राउज़र में pop-up की अनुमति दें।');return}w.document.write(`<html><head><title>DD Tailor Receipt</title><meta name="viewport" content="width=device-width,initial-scale=1"><style>body{font-family:Arial;padding:20px;color:#17243b}.receipt{max-width:500px;margin:auto;border:1px dashed #888;padding:18px}.receipt-head{text-align:center;border-bottom:2px solid #078653;padding-bottom:12px}.detail-line{display:flex;justify-content:space-between;border-bottom:1px solid #ddd;padding:10px 0}</style></head><body><div class="receipt">${receiptHTML(c)}</div><script>window.onload=()=>window.print()<\/script></body></html>`);w.document.close()}
+function smsText(c){return `नमस्ते ${c.name} जी, DD Tailor में आपके कपड़ों की कुल राशि ${money(c.total)} है। जमा राशि ${money(received(c))} और बाकी राशि ${money(remaining(c))} है। धन्यवाद!`}
+function sendSMS(){let c=db.customers.find(x=>x.id===currentCustomerId);if(!c)return;if(!c.phone){showToast('पहले ग्राहक का मोबाइल नंबर जोड़ें।');return}location.href='sms:'+encodeURIComponent(c.phone)+'?body='+encodeURIComponent(smsText(c))}
+async function shareReceipt(){let c=db.customers.find(x=>x.id===currentCustomerId);if(!c)return;let txt=smsText(c)+'\\n'+receiptHTML(c).replace(/<[^>]*>/g,' ');if(navigator.share){try{await navigator.share({title:'DD Tailor Receipt',text:txt})}catch(e){}}else{try{await navigator.clipboard.writeText(txt);showToast('रसीद का विवरण कॉपी हो गया।')}catch(e){showToast('इस ब्राउज़र में शेयर उपलब्ध नहीं है।')}}}
+function downloadReceiptText(){let c=db.customers.find(x=>x.id===currentCustomerId);if(!c)return;let txt=`DD Tailor\\nभुगतान रसीद\\nनाम: ${c.name}\\nमोबाइल: ${c.phone}\\nपता: ${c.address}\\nकुल रकम: ${money(c.total)}\\nजमा: ${money(received(c))}\\nबाकी: ${money(remaining(c))}\\nतारीख: ${today()}`;let a=document.createElement('a');a.href=URL.createObjectURL(new Blob([txt],{type:'text/plain;charset=utf-8'}));a.download='DD-Tailor-Receipt.txt';a.click();URL.revokeObjectURL(a.href)}
+function renderEmployees(){let el=document.getElementById('employeeList');el.innerHTML=db.employees.length?db.employees.map(e=>`<button class="customer" onclick="openEmployee('${e.id}')"><div class="avatar">🧵</div><div class="customer-main"><div class="customer-name">${esc(e.name)}</div><div class="tiny">${esc(e.phone||'मोबाइल नहीं')} • ${esc(e.address||'')}</div></div><b>›</b></button>`).join(''):'<div class="empty">अभी कोई कर्मचारी नहीं जोड़ा गया।</div>'}
+function openEmployeeForm(){['eName','ePhone','eAddress'].forEach(id=>document.getElementById(id).value='');document.getElementById('eRate8').value=150;document.getElementById('eRate12').value=220;showPage('employeeForm')}
+function saveEmployee(){let name=document.getElementById('eName').value.trim();if(!name){showToast('कर्मचारी का नाम लिखें।');return}let e={id:uid(),name,phone:document.getElementById('ePhone').value,address:document.getElementById('eAddress').value,rate8:Number(document.getElementById('eRate8').value||0),rate12:Number(document.getElementById('eRate12').value||0),days:[]};db.employees.push(e);currentEmployeeId=e.id;saveDB();openEmployee(e.id);showToast('कर्मचारी सेव हो गया।')}
+function openEmployee(id){currentEmployeeId=id;let e=db.employees.find(x=>x.id===id);if(!e)return;document.getElementById('eDetailName').textContent=e.name;document.getElementById('eDetailPhone').textContent=e.phone||'-';document.getElementById('eDetailAddress').textContent=e.address||'-';document.getElementById('eDetail8').textContent=money(e.rate8);document.getElementById('eDetail12').textContent=money(e.rate12);document.getElementById('workMonth').value=today().slice(0,7);document.getElementById('workDate').value=today();renderWork();showPage('employeeDetail')}
+function saveWorkDay(){let e=db.employees.find(x=>x.id===currentEmployeeId);if(!e)return;let date=document.getElementById('workDate').value,hours=Number(document.getElementById('workHours').value),extra=Number(document.getElementById('workExtra').value||0);if(!date){showToast('तारीख चुनें।');return}let amount=(hours===8?e.rate8:hours===12?e.rate12:0)+extra;e.days=e.days||[];let old=e.days.find(d=>d.date===date);if(old){Object.assign(old,{hours,extra,amount,note:document.getElementById('workNote').value})}else e.days.push({date,hours,extra,amount,note:document.getElementById('workNote').value});saveDB();renderWork();showToast('दिन का हिसाब सेव हो गया।')}
+function renderWork(){let e=db.employees.find(x=>x.id===currentEmployeeId);if(!e)return;let month=document.getElementById('workMonth').value||today().slice(0,7),days=(e.days||[]).filter(d=>d.date.startsWith(month)).sort((a,b)=>a.date.localeCompare(b.date));let total=days.reduce((s,d)=>s+d.amount,0),hours=days.reduce((s,d)=>s+d.hours,0);document.getElementById('workMonthTitle').textContent=month;document.getElementById('workMonthTotal').textContent=money(total);document.getElementById('workRows').innerHTML=days.map(d=>`<tr><td>${esc(d.date)}</td><td>${d.hours} घंटे</td><td>${money(d.amount)}</td><td>${esc(d.note||'-')}</td></tr>`).join('');document.getElementById('workSummary').textContent=`कुल काम के दिन: ${days.length} • कुल घंटे: ${hours} • कुल मजदूरी: ${money(total)}`}
+document.getElementById('workMonth').addEventListener('change',renderWork);
+function showBackup(){let data=JSON.stringify(db,null,2),blob=new Blob([data],{type:'application/json'}),a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='DD-Tailor-Backup.json';a.click();URL.revokeObjectURL(a.href);showToast('बैकअप फाइल डाउनलोड हो रही है।')}
+renderAll();showPage('home');
+</script>
+</body>
+</html>
